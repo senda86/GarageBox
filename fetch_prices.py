@@ -4,6 +4,7 @@ Viene eseguito da GitHub Actions. Usa solo la libreria standard."""
 import json, re, sys, urllib.request
 from datetime import datetime, timedelta, timezone
 
+SRC = "https://www.opet.com.tr/akaryakit-fiyatlari"
 URL = "https://api.opet.com.tr/api/fuelprices/prices?ProvinceCode=34"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
@@ -14,7 +15,7 @@ HEADERS = {
 }
 NAME_KEYS = ("productName", "ProductName", "fuelName", "name", "Name", "productShortName", "ProductShortName", "fuelType")
 PRICE_KEYS = ("amount", "Amount", "price", "Price", "unitPrice", "value")
-SKIP = ("v/max", "v-max", "vmax", "ecoforce", "97", "98", "100", "premium", "gazyağı", "gazyagi", "fuel oil", "fuel-oil", "kalorifer", "yüksek", "yuksek", "aygaz", "ısıtma")
+SKIP = ("v/max", "v-max", "vmax", "97", "98", "100", "premium", "gazyağı", "gazyagi", "fuel oil", "fuel-oil", "kalorifer", "yüksek", "yuksek", "aygaz", "ısıtma")
 
 
 def to_num(v):
@@ -78,23 +79,25 @@ def main():
         print("ERRORE: la risposta non è JSON valido:", e)
         sys.exit(1)
     print("Prezzi trovati:", cur)
-    if sorted(cur) != ["benzin", "lpg", "motorin"] or not all(5 < v < 1000 for v in cur.values()):
+    if "benzin" not in cur or "motorin" not in cur or not all(5 < v < 1000 for v in cur.values()):
         print("ERRORE: prezzi mancanti o non plausibili, prices.json non modificato")
         sys.exit(1)
+    cur.setdefault("lpg", None)  # Opet non pubblica il GPL in questa interfaccia
     try:
         old = json.load(open("prices.json", encoding="utf-8"))
     except Exception:
         old = {}
     today = datetime.now(timezone(timedelta(hours=3))).date().isoformat()
-    prev = old.get("prev", {"d": today, **{k: None for k in cur}})
-    if old.get("cur") and old["cur"] != cur:
+    same_src = old.get("src") == SRC
+    prev = old.get("prev") if same_src and old.get("prev") else {"d": today, **{k: None for k in cur}}
+    if same_src and old.get("cur") and old["cur"] != cur:
         prev = {"d": old.get("asof", today), **old["cur"]}
     out = {
         "city": "Istanbul",
         "asof": today,
         "cur": cur,
         "prev": prev,
-        "src": "https://www.opet.com.tr/akaryakit-fiyatlari",
+        "src": SRC,
     }
     with open("prices.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)

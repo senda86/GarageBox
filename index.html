@@ -114,7 +114,7 @@ img:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="current
 var PRICES={city:'Istanbul',asof:'2026-11-16',src:'https://tr.motor1.com/news/815521/akaryakit-fiyatlari-16-kasim-2026/',cur:{benzin:71.0,motorin:95.1,lpg:50.1},prev:{d:'2026-11-10',benzin:74.6,motorin:95.2,lpg:null}};
 var FT=['benzin','motorin','lpg'];
 function sig(){return FT.map(function(f){return PRICES.cur[f]}).join('|')}
-function applyPrices(j){try{if(!j||!j.asof||!j.cur)return false;for(var i=0;i<FT.length;i++){if(typeof j.cur[FT[i]]!=='number')return false}PRICES.asof=j.asof;PRICES.cur=j.cur;PRICES.prev=j.prev||{d:j.asof};PRICES.src=j.src||PRICES.src;PRICES.city=j.city||PRICES.city;return true}catch(e){return false}}
+function applyPrices(j){try{if(!j||!j.asof||!j.cur)return false;if(typeof j.cur.benzin!=='number'||typeof j.cur.motorin!=='number')return false;if(typeof j.cur.lpg!=='number')j.cur.lpg=null;PRICES.asof=j.asof;PRICES.cur=j.cur;PRICES.prev=j.prev||{d:j.asof};PRICES.src=j.src||PRICES.src;PRICES.city=j.city||PRICES.city;return true}catch(e){return false}}
 var PL={busy:false};
 function loadPrices(manual){if(PL.busy)return null;PL.busy=true;if(manual)render();
  return fetch('prices.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&applyPrices(j)){S.s.pc=j;if(S.s.seenP===undefined)S.s.seenP=sig();save()}}).catch(function(){}).then(function(){PL.busy=false;if(!R.sheet)render()})}
@@ -148,10 +148,10 @@ function statsHtml(es){var y=String(new Date().getFullYear()),c=cons(es);
 function isStandalone(){try{return(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}catch(e){return false}}
 function stale(){return -days(PRICES.asof)>3}
 function priceCard(){var un=S.s.seenP!==undefined&&S.s.seenP!==sig();
- var rows=FT.map(function(f){var c=PRICES.cur[f],p=PRICES.prev[f],dl=(p!=null)?c-p:null;
-  return '<div class="stat"><span class="small muted">'+t(f)+'</span><b>'+c.toFixed(2)+' ₺</b>'+(dl?'<span class="chip '+(dl>0?'bad':'ok')+'">'+(dl>0?'▲ +':'▼ ')+dl.toFixed(2)+'</span>':'')+'</div>'}).join('');
- var any=FT.some(function(f){var p=PRICES.prev[f];return p!=null&&p!==PRICES.cur[f]});
- var up=FT.some(function(f){var p=PRICES.prev[f];return p!=null&&PRICES.cur[f]>p});var dn=FT.some(function(f){var p=PRICES.prev[f];return p!=null&&PRICES.cur[f]<p});
+ var rows=FT.map(function(f){var c=PRICES.cur[f],p=PRICES.prev[f],dl=(p!=null&&c!=null)?c-p:null;
+  return '<div class="stat"><span class="small muted">'+t(f)+'</span><b>'+(c==null?'—':c.toFixed(2)+' ₺')+'</b>'+(dl?'<span class="chip '+(dl>0?'bad':'ok')+'">'+(dl>0?'▲ +':'▼ ')+dl.toFixed(2)+'</span>':'')+'</div>'}).join('');
+ var any=FT.some(function(f){var p=PRICES.prev[f],c=PRICES.cur[f];return p!=null&&c!=null&&p!==c});
+ var up=FT.some(function(f){var p=PRICES.prev[f],c=PRICES.cur[f];return p!=null&&c!=null&&c>p});var dn=FT.some(function(f){var p=PRICES.prev[f],c=PRICES.cur[f];return p!=null&&c!=null&&c<p});
  var al=(un&&any)?'<div class="card pad row" style="border:1px solid var(--accent);gap:10px"><span class="grow"><b>'+(up&&!dn?t('pUp'):dn&&!up?t('pDown'):t('pUp')+' / '+t('pDown'))+'</b><div class="small muted">'+t('sinceD',{d:fdate(PRICES.prev.d)})+'</div></span><button class="btn ghost sm" data-a="pseen">'+t('dismiss')+'</button></div>':'';
  return al+'<div class="section-h"><h2>'+t('priceTitle')+'</h2><button class="icon-btn" data-a="prefresh" aria-label="'+t('refresh')+'" style="'+(PL.busy?'opacity:.5':'')+'">↻</button></div><div class="stats" style="grid-template-columns:repeat(3,1fr)">'+rows+'</div><div class="small '+(stale()?'':'muted')+'" style="'+(stale()?'color:var(--warn)':'')+'">'+t('asof',{d:fdate(PRICES.asof)})+' · <a href="'+PRICES.src+'" target="_blank" rel="noopener" style="color:inherit">'+t('source')+'</a>'+(stale()?'<br>'+t('stale'):'')+'</div>'}
 function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
@@ -230,7 +230,7 @@ function val(i){var x=$(i);return x?x.value.trim():''}
 function nv(i){var x=val(i);return x===''?null:+x}
 function arm(k,fn){if(R.arm===k){R.arm=null;fn()}else{R.arm=k;render()}}
 function notify(msg){try{if('Notification' in window&&Notification.permission==='granted'){new Notification('GarageBox',{body:msg});return true}}catch(e){}return false}
-function priceNotify(){if(S.s.seenP===undefined||S.s.seenP===sig())return;var u=FT.filter(function(f){var p=PRICES.prev[f];return p!=null&&p!==PRICES.cur[f]}).map(function(f){var d=PRICES.cur[f]-PRICES.prev[f];return t(f)+' '+(d>0?'+':'')+d.toFixed(2)});if(u.length&&notify(t('priceTitle')+': '+u.join(', '))){S.s.seenP=sig();save()}}
+function priceNotify(){if(S.s.seenP===undefined||S.s.seenP===sig())return;var u=FT.filter(function(f){var p=PRICES.prev[f],c=PRICES.cur[f];return p!=null&&c!=null&&p!==c}).map(function(f){var d=PRICES.cur[f]-PRICES.prev[f];return t(f)+' '+(d>0?'+':'')+d.toFixed(2)});if(u.length&&notify(t('priceTitle')+': '+u.join(', '))){S.s.seenP=sig();save()}}
 function checkNotify(){priceNotify();var a=alerts();if(a.length&&S.s.lastN!==today()){var v=veh(a[0].d.vid);if(notify(t(a[0].d.type)+(v?' · '+v.name:'')+' — '+(a[0].txt||t('overdue'))+(a.length>1?' (+'+(a.length-1)+')':''))){S.s.lastN=today();save()}}}
 document.addEventListener('click',function(ev){var el=ev.target.closest('[data-a]');if(!el)return;var a=el.dataset.a,id=el.dataset.id;
  if(a==='scrim'){if(ev.target!==el)return;R.sheet=null;R.photo=undefined;return render()}

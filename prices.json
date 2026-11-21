@@ -1,0 +1,7 @@
+{
+ "city": "Istanbul",
+ "asof": "2026-11-16",
+ "cur": {"benzin": 71.0, "motorin": 95.1, "lpg": 50.1},
+ "prev": {"d": "2026-11-10", "benzin": 74.6, "motorin": 95.2, "lpg": null},
+ "src": "https://tr.motor1.com/news/815521/akaryakit-fiyatlari-16-kasim-2026/"
+}

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0e0d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="GarageBox">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>GarageBox</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: phone-first app shell, scrolling content column, fixed bottom tab bar, bottom sheets for forms */
+:root{--bg:#0c0e0d;--surface:#151917;--surface2:#1d2220;--line:#2a312e;--fg:#eef2ef;--muted:#8e9a94;--accent:#b8f23a;--accent-ink:#0c1100;--warn:#f5a524;--bad:#ff6b6b;--ok:#4ade80;--shade:rgba(0,0,0,.6);--fd:'Space Grotesk',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f5f2;--surface:#fff;--surface2:#e9ede8;--line:#d6ddd6;--fg:#121614;--muted:#596660;--accent:#4d7c0f;--accent-ink:#fff;--warn:#b45309;--bad:#c62828;--ok:#15803d;--shade:rgba(0,0,0,.4);color-scheme:light}}
+:root[data-theme="light"]{--bg:#f3f5f2;--surface:#fff;--surface2:#e9ede8;--line:#d6ddd6;--fg:#121614;--muted:#596660;--accent:#4d7c0f;--accent-ink:#fff;--warn:#b45309;--bad:#c62828;--ok:#15803d;--shade:rgba(0,0,0,.4);color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--fb);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:18px;padding-top:18px}
+h1,h2,h3{font-family:var(--fd);margin:0;text-wrap:balance}
+h1{font-size:26px;letter-spacing:-.01em}h2{font-size:18px}h3{font-size:16px}
+.muted{color:var(--muted)}.small{font-size:13px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{background:var(--accent);color:var(--accent-ink);font-weight:600;padding:11px 16px;border-radius:12px;display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.btn.ghost{background:var(--surface2);color:var(--fg)}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid var(--line)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}
+.list{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.pad{padding:14px}
+.vcard{display:block;width:100%;text-align:left;position:relative;min-height:170px;color:#fff;background:#1d2220 center/cover}
+.vcard .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 25%,rgba(0,0,0,.82))}
+.vcard .info{position:absolute;left:0;right:0;bottom:0;padding:14px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.vcard .nm{font:700 20px var(--fd)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--surface2);white-space:nowrap}
+.chip.bad{background:color-mix(in srgb,var(--bad) 20%,transparent);color:var(--bad)}
+.chip.warn{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.chip.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.vcard .chip{background:rgba(0,0,0,.55);color:#fff}
+.ph{display:grid;place-items:center;color:var(--muted);height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .grow{flex:1;min-width:0}
+.row .t{font-weight:600;overflow-wrap:anywhere}
+.row .ico{width:38px;height:38px;border-radius:11px;background:var(--surface2);display:grid;place-items:center;flex:none;color:var(--accent)}
+.amount{font:600 15px var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font:700 20px var(--fd);font-variant-numeric:tabular-nums;margin-top:2px}
+.hero{height:200px;background:var(--surface2) center/cover;border-radius:16px;position:relative;overflow:hidden;color:#fff}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1) 30%,rgba(0,0,0,.85))}
+.hero .info{position:absolute;left:14px;right:14px;bottom:12px}
+.hero .nm{font:700 24px var(--fd)}
+.seg{display:flex;gap:6px;background:var(--surface2);padding:4px;border-radius:12px}
+.seg button{flex:1;min-width:0;font-size:13px;padding:8px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:9px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--surface);border-top:1px solid var(--line);padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));z-index:5}
+.tabs nav{display:flex;width:100%;max-width:640px;gap:4px}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 2px;border-radius:12px}
+.tabs button.on{color:var(--accent)}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:4;width:56px;height:56px;border-radius:18px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.scrim{position:fixed;inset:0;background:var(--shade);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:22px 22px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.field input,.field select,.field textarea{background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;width:100%;min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}.acts .btn{flex:1}
+.empty{text-align:center;padding:34px 18px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.section-h{display:flex;justify-content:space-between;align-items:center}
+.cover-prev{height:110px;border-radius:12px;background:var(--surface2) center/cover;display:grid;place-items:center;color:var(--muted)}
+.lang{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px}
+textarea.bk{min-height:90px;font:12px/1.3 ui-monospace,monospace}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.4}}}
+</style>
+<body><div id="app"></div><script>
+var L={
+en:{garage:'Garage',deadlines:'Deadlines',log:'Expenses',settings:'Settings',myGarage:'My garage',addVehicle:'Add vehicle',noVeh:'Your garage is empty',noVehSub:'Add your first car or motorbike to start tracking deadlines and costs.',upcoming:'Needs attention',allGood:'Nothing due soon. All good.',vehicle:'Vehicle',car:'Car',moto:'Motorbike',name:'Name',make:'Make',model:'Model',year:'Year',plate:'Plate',km:'Mileage (km)',cover:'Cover photo',addPhoto:'Choose photo',save:'Save',cancel:'Cancel',del:'Delete',edit:'Edit',insurance:'Insurance',inspection:'Inspection',service:'Service',other:'Other',overdue:'Overdue',today:'Today',inDays:'in {n} days',daysAgo:'{n} days ago',tomorrow:'Tomorrow',addDeadline:'Add deadline',date:'Date',note:'Note',dueKm:'Or at mileage (km)',kmLeft:'{n} km left',kmOver:'{n} km over',noDeadlines:'No deadlines yet.',noEntries:'Nothing logged yet.',addEntry:'Add entry',category:'Category',cost:'Cost',liters:'Liters',fuel:'Fuel',svc:'Service',oil:'Oil change',tires:'Tires',brakes:'Brake pads / discs',battery:'Battery',maint:'Other maintenance',parking:'Parking',wash:'Car wash',toll:'Toll',fine:'Fine',acc:'Accessories',exp:'Other expense',history:'History',total:'Total spent',thisYear:'This year',fuelCost:'Fuel',maintCost:'Maintenance',avgCons:'Avg consumption',lang:'Language',currency:'Currency',reminder:'Remind me (days before)',notif:'Notifications',notifOn:'Enable notifications',notifTest:'Send a test',notifNo:'Not available in this view. Reminders still appear on the Garage screen when you open the app.',notifGranted:'Enabled',theme:'Theme',auto:'Auto',dark:'Dark',light:'Light',backup:'Backup',copy:'Copy data',paste:'Paste backup here',restore:'Restore',copied:'Copied',restored:'Restored',bad:'Invalid backup',reset:'Delete all data',confirm:'Tap again to confirm',vehicles:'vehicles',back:'Back',all:'All',storedLocal:'Data is stored only on this device.',required:'Please fill the name.',noVehFirst:'Add a vehicle first.',priceTitle:'Fuel prices · Istanbul',benzin:'Petrol',motorin:'Diesel',lpg:'LPG',fuelType:'Fuel type',paid:'Amount paid',ppl:'Price per liter',asof:'Updated {d}',stale:'Prices may be outdated. Ask Claude to refresh them.',source:'Source',pUp:'Fuel prices went up',pDown:'Fuel prices went down',sinceD:'since {d}',dismiss:'Dismiss',monthly:'Monthly spending',nonFuel:'Maintenance & other',estMonth:'Estimate this month',soFar:'Spent so far',avg3:'Monthly average (3 mo.)',kmMonth:'Km this month',autoL:'Liters are calculated from amount and price.',installTitle:'Install on your phone',installIos:'On iPhone open the link in Safari, tap Share, then Add to Home Screen.',installAndroid:'On Android open the link in Chrome, tap the menu (⋮), then Install app or Add to Home screen.',installBtn:'Install',refresh:'Refresh prices',lper:'L/100 km'},
+it:{garage:'Garage',deadlines:'Scadenze',log:'Spese',settings:'Impostazioni',myGarage:'Il mio garage',addVehicle:'Aggiungi veicolo',noVeh:'Il garage è vuoto',noVehSub:'Aggiungi la tua prima auto o moto per tenere sotto controllo scadenze e costi.',upcoming:'Da controllare',allGood:'Niente in scadenza. Tutto a posto.',vehicle:'Veicolo',car:'Auto',moto:'Moto',name:'Nome',make:'Marca',model:'Modello',year:'Anno',plate:'Targa',km:'Chilometri',cover:'Foto di copertina',addPhoto:'Scegli foto',save:'Salva',cancel:'Annulla',del:'Elimina',edit:'Modifica',insurance:'Assicurazione',inspection:'Revisione',service:'Tagliando',other:'Altro',overdue:'Scaduto',today:'Oggi',inDays:'tra {n} giorni',daysAgo:'{n} giorni fa',tomorrow:'Domani',addDeadline:'Aggiungi scadenza',date:'Data',note:'Nota',dueKm:'Oppure ai km',kmLeft:'mancano {n} km',kmOver:'superati di {n} km',noDeadlines:'Nessuna scadenza.',noEntries:'Ancora nulla registrato.',addEntry:'Aggiungi voce',category:'Categoria',cost:'Costo',liters:'Litri',fuel:'Rifornimento',svc:'Tagliando',oil:'Cambio olio',tires:'Gomme',brakes:'Pastiglie / dischi freni',battery:'Batteria',maint:'Altra manutenzione',parking:'Parcheggio',wash:'Lavaggio',toll:'Pedaggio',fine:'Multa',acc:'Accessori',exp:'Altra spesa',history:'Storico',total:'Totale speso',thisYear:'Quest\'anno',fuelCost:'Carburante',maintCost:'Manutenzione',avgCons:'Consumo medio',lang:'Lingua',currency:'Valuta',reminder:'Avvisami (giorni prima)',notif:'Notifiche',notifOn:'Attiva notifiche',notifTest:'Invia una prova',notifNo:'Non disponibili in questa vista. Gli avvisi compaiono comunque nella schermata Garage quando apri l\'app.',notifGranted:'Attive',theme:'Tema',auto:'Auto',dark:'Scuro',light:'Chiaro',backup:'Backup',copy:'Copia dati',paste:'Incolla qui il backup',restore:'Ripristina',copied:'Copiato',restored:'Ripristinato',bad:'Backup non valido',reset:'Elimina tutti i dati',confirm:'Tocca di nuovo per confermare',vehicles:'veicoli',back:'Indietro',all:'Tutti',storedLocal:'I dati sono salvati solo su questo dispositivo.',required:'Inserisci il nome.',noVehFirst:'Aggiungi prima un veicolo.',priceTitle:'Prezzi carburante · Istanbul',benzin:'Benzina',motorin:'Diesel',lpg:'GPL',fuelType:'Tipo di carburante',paid:'Importo pagato',ppl:'Prezzo al litro',asof:'Aggiornato {d}',stale:'I prezzi potrebbero non essere aggiornati. Chiedi a Claude di aggiornarli.',source:'Fonte',pUp:'Il carburante è aumentato',pDown:'Il carburante è sceso',sinceD:'dal {d}',dismiss:'Chiudi',monthly:'Spesa mensile',nonFuel:'Manutenzione e altro',estMonth:'Stima del mese',soFar:'Speso finora',avg3:'Media mensile (3 mesi)',kmMonth:'Km questo mese',autoL:'I litri sono calcolati da importo e prezzo.',installTitle:'Installa sul telefono',installIos:'Su iPhone apri il link in Safari, tocca Condividi, poi «Aggiungi alla schermata Home».',installAndroid:'Su Android apri il link in Chrome, tocca il menu (⋮), poi «Installa app» o «Aggiungi a schermata Home».',installBtn:'Installa',refresh:'Aggiorna prezzi',lper:'L/100 km'},
+tr:{garage:'Garaj',deadlines:'Tarihler',log:'Giderler',settings:'Ayarlar',myGarage:'Garajım',addVehicle:'Araç ekle',noVeh:'Garajın boş',noVehSub:'Tarihleri ve masrafları takip etmek için ilk arabanı veya motorunu ekle.',upcoming:'Dikkat gerekenler',allGood:'Yaklaşan bir şey yok. Her şey yolunda.',vehicle:'Araç',car:'Araba',moto:'Motosiklet',name:'Ad',make:'Marka',model:'Model',year:'Yıl',plate:'Plaka',km:'Kilometre',cover:'Kapak fotoğrafı',addPhoto:'Fotoğraf seç',save:'Kaydet',cancel:'İptal',del:'Sil',edit:'Düzenle',insurance:'Sigorta',inspection:'Muayene',service:'Bakım',other:'Diğer',overdue:'Süresi geçti',today:'Bugün',inDays:'{n} gün sonra',daysAgo:'{n} gün önce',tomorrow:'Yarın',addDeadline:'Tarih ekle',date:'Tarih',note:'Not',dueKm:'Veya kilometrede',kmLeft:'{n} km kaldı',kmOver:'{n} km geçti',noDeadlines:'Henüz tarih yok.',noEntries:'Henüz kayıt yok.',addEntry:'Kayıt ekle',category:'Kategori',cost:'Tutar',liters:'Litre',fuel:'Yakıt',svc:'Periyodik bakım',oil:'Yağ değişimi',tires:'Lastik',brakes:'Fren balatası / diski',battery:'Akü',maint:'Diğer bakım',parking:'Otopark',wash:'Yıkama',toll:'Geçiş ücreti',fine:'Ceza',acc:'Aksesuar',exp:'Diğer gider',history:'Geçmiş',total:'Toplam harcama',thisYear:'Bu yıl',fuelCost:'Yakıt',maintCost:'Bakım',avgCons:'Ort. tüketim',lang:'Dil',currency:'Para birimi',reminder:'Hatırlat (gün önce)',notif:'Bildirimler',notifOn:'Bildirimleri aç',notifTest:'Deneme gönder',notifNo:'Bu görünümde kullanılamıyor. Uygulamayı açtığında hatırlatmalar yine Garaj ekranında görünür.',notifGranted:'Açık',theme:'Tema',auto:'Otomatik',dark:'Koyu',light:'Açık',backup:'Yedek',copy:'Verileri kopyala',paste:'Yedeği buraya yapıştır',restore:'Geri yükle',copied:'Kopyalandı',restored:'Geri yüklendi',bad:'Geçersiz yedek',reset:'Tüm verileri sil',confirm:'Onaylamak için tekrar dokun',vehicles:'araç',back:'Geri',all:'Hepsi',storedLocal:'Veriler yalnızca bu cihazda saklanır.',required:'Lütfen adı gir.',noVehFirst:'Önce bir araç ekle.',priceTitle:'Akaryakıt fiyatları · İstanbul',benzin:'Benzin',motorin:'Motorin',lpg:'LPG',fuelType:'Yakıt türü',paid:'Ödenen tutar',ppl:'Litre fiyatı',asof:'Güncelleme {d}',stale:'Fiyatlar güncel olmayabilir. Claude’dan yenilemesini iste.',source:'Kaynak',pUp:'Akaryakıta zam geldi',pDown:'Akaryakıtta indirim var',sinceD:'{d} tarihinden beri',dismiss:'Kapat',monthly:'Aylık harcama',nonFuel:'Bakım ve diğer',estMonth:'Bu ay tahmini',soFar:'Şimdiye kadar',avg3:'Aylık ortalama (3 ay)',kmMonth:'Bu ay km',autoL:'Litre, tutar ve fiyattan hesaplanır.',installTitle:'Telefonuna yükle',installIos:'iPhone’da bağlantıyı Safari’de aç, Paylaş’a dokun, sonra Ana Ekrana Ekle’yi seç.',installAndroid:'Android’de bağlantıyı Chrome’da aç, menüye (⋮) dokun, sonra Uygulamayı yükle veya Ana ekrana ekle’yi seç.',installBtn:'Yükle',refresh:'Fiyatları yenile',lper:'L/100 km'},
+fr:{garage:'Garage',deadlines:'Échéances',log:'Dépenses',settings:'Réglages',myGarage:'Mon garage',addVehicle:'Ajouter un véhicule',noVeh:'Votre garage est vide',noVehSub:'Ajoutez votre première voiture ou moto pour suivre échéances et coûts.',upcoming:'À surveiller',allGood:'Rien d\'urgent. Tout est en ordre.',vehicle:'Véhicule',car:'Voiture',moto:'Moto',name:'Nom',make:'Marque',model:'Modèle',year:'Année',plate:'Plaque',km:'Kilométrage',cover:'Photo de couverture',addPhoto:'Choisir une photo',save:'Enregistrer',cancel:'Annuler',del:'Supprimer',edit:'Modifier',insurance:'Assurance',inspection:'Contrôle technique',service:'Entretien',other:'Autre',overdue:'En retard',today:'Aujourd\'hui',inDays:'dans {n} jours',daysAgo:'il y a {n} jours',tomorrow:'Demain',addDeadline:'Ajouter une échéance',date:'Date',note:'Note',dueKm:'Ou au kilométrage',kmLeft:'encore {n} km',kmOver:'dépassé de {n} km',noDeadlines:'Aucune échéance.',noEntries:'Rien d\'enregistré.',addEntry:'Ajouter une entrée',category:'Catégorie',cost:'Coût',liters:'Litres',fuel:'Carburant',svc:'Révision',oil:'Vidange',tires:'Pneus',brakes:'Plaquettes / disques',battery:'Batterie',maint:'Autre entretien',parking:'Parking',wash:'Lavage',toll:'Péage',fine:'Amende',acc:'Accessoires',exp:'Autre dépense',history:'Historique',total:'Total dépensé',thisYear:'Cette année',fuelCost:'Carburant',maintCost:'Entretien',avgCons:'Conso. moyenne',lang:'Langue',currency:'Devise',reminder:'Me prévenir (jours avant)',notif:'Notifications',notifOn:'Activer les notifications',notifTest:'Envoyer un test',notifNo:'Indisponible dans cette vue. Les rappels s\'affichent quand même sur l\'écran Garage à l\'ouverture.',notifGranted:'Activées',theme:'Thème',auto:'Auto',dark:'Sombre',light:'Clair',backup:'Sauvegarde',copy:'Copier les données',paste:'Collez la sauvegarde ici',restore:'Restaurer',copied:'Copié',restored:'Restauré',bad:'Sauvegarde invalide',reset:'Supprimer toutes les données',confirm:'Touchez à nouveau pour confirmer',vehicles:'véhicules',back:'Retour',all:'Tous',storedLocal:'Les données sont stockées uniquement sur cet appareil.',required:'Saisissez le nom.',noVehFirst:'Ajoutez d\'abord un véhicule.',priceTitle:'Prix du carburant · Istanbul',benzin:'Essence',motorin:'Diesel',lpg:'GPL',fuelType:'Type de carburant',paid:'Montant payé',ppl:'Prix au litre',asof:'Mis à jour {d}',stale:'Les prix sont peut-être périmés. Demandez à Claude de les actualiser.',source:'Source',pUp:'Le carburant a augmenté',pDown:'Le carburant a baissé',sinceD:'depuis le {d}',dismiss:'Fermer',monthly:'Dépenses mensuelles',nonFuel:'Entretien et autres',estMonth:'Estimation du mois',soFar:'Dépensé à ce jour',avg3:'Moyenne mensuelle (3 mois)',kmMonth:'Km ce mois',autoL:'Les litres sont calculés à partir du montant et du prix.',installTitle:'Installer sur le téléphone',installIos:'Sur iPhone, ouvrez le lien dans Safari, touchez Partager, puis Sur l’écran d’accueil.',installAndroid:'Sur Android, ouvrez le lien dans Chrome, touchez le menu (⋮), puis Installer l’application ou Ajouter à l’écran d’accueil.',installBtn:'Installer',refresh:'Actualiser les prix',lper:'L/100 km'}
+};
+var LOCALE={en:'en-GB',it:'it-IT',tr:'tr-TR',fr:'fr-FR'};
+</script>
+<script>
+var KEY='garagebox.v1',mem=null;
+var S={v:[],d:[],e:[],s:{lang:'it',cur:'₺',lead:30,theme:'auto',lastN:''}};
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);S=Object.assign(S,o);S.s=Object.assign({lang:'it',cur:'₺',lead:30,theme:'auto',lastN:''},o.s||{});}}catch(e){if(mem)S=mem}}
+function save(){mem=S;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+load();
+var R={tab:'garage',vid:null,sheet:null,fv:'all',arm:null};
+var $=function(i){return document.getElementById(i)};
+function t(k,o){var s=(L[S.s.lang]||L.en)[k]||L.en[k]||k;if(o)for(var x in o)s=s.replace('{'+x+'}',o[x]);return s}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function money(n){return new Intl.NumberFormat(LOCALE[S.s.lang],{maximumFractionDigits:2,minimumFractionDigits:n%1?2:0}).format(n||0)+' '+S.s.cur}
+function num(n){return new Intl.NumberFormat(LOCALE[S.s.lang]).format(n||0)}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function days(ds){var a=ds.split('-');var d=new Date(+a[0],+a[1]-1,+a[2]);var n=new Date();n=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((d-n)/864e5)}
+function fdate(ds){var a=ds.split('-');return new Date(+a[0],+a[1]-1,+a[2]).toLocaleDateString(LOCALE[S.s.lang],{day:'numeric',month:'short',year:'numeric'})}
+function veh(id){return S.v.find(function(v){return v.id===id})}
+var I={
+car:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2M5 17a2 2 0 104 0M15 17a2 2 0 104 0M9 17h6M3 12h18"/></svg>',
+moto:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5L9 9h5l4.5 7.5M14 9l-1-3h-3M9 9l3 7.5"/></svg>',
+plus:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+cal:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+wal:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h14a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h11"/><circle cx="16" cy="13.5" r="1.2"/></svg>',
+set:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>',
+home:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M7 21v-6h10v6"/></svg>',
+img:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>'};
+var PRICES={city:'Istanbul',asof:'2026-11-16',src:'https://tr.motor1.com/news/815521/akaryakit-fiyatlari-16-kasim-2026/',cur:{benzin:71.0,motorin:95.1,lpg:50.1},prev:{d:'2026-11-10',benzin:74.6,motorin:95.2,lpg:null}};
+var FT=['benzin','motorin','lpg'];
+function sig(){return FT.map(function(f){return PRICES.cur[f]}).join('|')}
+function applyPrices(j){try{if(!j||!j.asof||!j.cur)return false;for(var i=0;i<FT.length;i++){if(typeof j.cur[FT[i]]!=='number')return false}PRICES.asof=j.asof;PRICES.cur=j.cur;PRICES.prev=j.prev||{d:j.asof};PRICES.src=j.src||PRICES.src;PRICES.city=j.city||PRICES.city;return true}catch(e){return false}}
+var PL={busy:false};
+function loadPrices(manual){if(PL.busy)return null;PL.busy=true;if(manual)render();
+ return fetch('prices.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&applyPrices(j)){S.s.pc=j;if(S.s.seenP===undefined)S.s.seenP=sig();save()}}).catch(function(){}).then(function(){PL.busy=false;if(!R.sheet)render()})}
+function ref(f){return PRICES.cur[f]}
+function lastPpl(vid,f){var a=S.e.filter(function(e){return e.vid===vid&&e.cat==='fuel'&&e.ppl&&(!f||e.fuel===f)}).sort(function(x,y){return y.date.localeCompare(x.date)});return a.length?a[0].ppl:null}
+var DT=['insurance','inspection','service','other'];
+var CAT={maint:['svc','oil','tires','brakes','battery','maint'],fuel:['fuel'],exp:['parking','wash','toll','fine','acc','exp']};
+function grp(c){return CAT.fuel.indexOf(c)>-1?'fuel':CAT.maint.indexOf(c)>-1?'maint':'exp'}
+
+</script>
+<script>
+function status(d){var v=veh(d.vid),ds=d.date?days(d.date):null,kl=(d.km&&v&&v.km!=null)?d.km-v.km:null,lead=+S.s.lead||30;
+ var st='ok';if((ds!==null&&ds<0)||(kl!==null&&kl<0))st='bad';else if((ds!==null&&ds<=lead)||(kl!==null&&kl<=1000))st='warn';
+ var txt=[];if(ds!==null)txt.push(ds<0?t('daysAgo',{n:-ds}):ds===0?t('today'):ds===1?t('tomorrow'):t('inDays',{n:ds}));
+ if(kl!==null)txt.push(kl<0?t('kmOver',{n:num(-kl)}):t('kmLeft',{n:num(kl)}));
+ return{st:st,txt:txt.join(' · '),ds:ds===null?9999:ds}}
+function alerts(){return S.d.map(function(d){var s=status(d);s.d=d;return s}).filter(function(s){return s.st!=='ok'}).sort(function(a,b){return a.ds-b.ds})}
+function cover(v,cls){return v.photo?' style="background-image:url('+v.photo+')"':''}
+function chip(s){return '<span class="chip '+s.st+'">'+esc(s.txt||t('overdue'))+'</span>'}
+function dlRow(d,showV){var s=status(d),v=veh(d.vid);
+ return '<button class="row" style="width:100%;text-align:left" data-a="dl" data-id="'+d.id+'"><span class="ico">'+I.cal+'</span><span class="grow"><div class="t">'+esc(t(d.type))+(d.note?' · '+esc(d.note):'')+'</div><div class="small muted">'+(showV&&v?esc(v.name)+' · ':'')+(d.date?fdate(d.date):'')+(d.date&&d.km?' · ':'')+(d.km?num(d.km)+' km':'')+'</div></span>'+chip(s)+'</button>'}
+function enRow(e,showV){var v=veh(e.vid);
+ return '<button class="row" style="width:100%;text-align:left" data-a="en" data-id="'+e.id+'"><span class="ico">'+I.wal+'</span><span class="grow"><div class="t">'+esc(t(e.cat))+(e.note?' · '+esc(e.note):'')+'</div><div class="small muted">'+(showV&&v?esc(v.name)+' · ':'')+fdate(e.date)+(e.km?' · '+num(e.km)+' km':'')+(e.liters?' · '+e.liters+' L':'')+'</div></span><span class="amount">'+money(e.cost)+'</span></button>'}
+function vCard(v){var al=S.d.filter(function(d){return d.vid===v.id}).map(status).filter(function(s){return s.st!=='ok'}).length;
+ return '<button class="card vcard" data-a="open" data-id="'+v.id+'"'+cover(v)+'>'+(v.photo?'':'<div class="ph" style="position:absolute;inset:0">'+I[v.type]+'</div>')+'<div class="shade"></div><div class="info"><div><div class="nm">'+esc(v.name)+'</div><div class="small" style="opacity:.85">'+esc([v.make,v.model,v.year].filter(Boolean).join(' '))+(v.plate?' · '+esc(v.plate):'')+'</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+(al?'<span class="chip warn">'+al+' !</span>':'')+(v.km!=null?'<span class="chip">'+num(v.km)+' km</span>':'')+'</div></div></button>'}
+function sum(a){return a.reduce(function(x,e){return x+(+e.cost||0)},0)}
+function cons(es){var f=es.filter(function(e){return e.cat==='fuel'&&e.km&&e.liters}).sort(function(a,b){return a.km-b.km});if(f.length<2)return null;
+ var l=0;for(var i=1;i<f.length;i++)l+=+f[i].liters;var k=f[f.length-1].km-f[0].km;return k>0?l/k*100:null}
+function statsHtml(es){var y=String(new Date().getFullYear()),c=cons(es);
+ return '<div class="stats"><div class="stat"><span class="small muted">'+t('total')+'</span><b>'+money(sum(es))+'</b></div><div class="stat"><span class="small muted">'+t('thisYear')+'</span><b>'+money(sum(es.filter(function(e){return e.date.slice(0,4)===y})))+'</b></div><div class="stat"><span class="small muted">'+t('fuelCost')+'</span><b>'+money(sum(es.filter(function(e){return grp(e.cat)==='fuel'})))+'</b></div><div class="stat"><span class="small muted">'+(c?t('avgCons'):t('maintCost'))+'</span><b>'+(c?c.toFixed(1)+' '+t('lper'):money(sum(es.filter(function(e){return grp(e.cat)==='maint'}))))+'</b></div></div>'}
+function isStandalone(){try{return(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}catch(e){return false}}
+function stale(){return -days(PRICES.asof)>3}
+function priceCard(){var un=S.s.seenP!==undefined&&S.s.seenP!==sig();
+ var rows=FT.map(function(f){var c=PRICES.cur[f],p=PRICES.prev[f],dl=(p!=null)?c-p:null;
+  return '<div class="stat"><span class="small muted">'+t(f)+'</span><b>'+c.toFixed(2)+' ₺</b>'+(dl?'<span class="chip '+(dl>0?'bad':'ok')+'">'+(dl>0?'▲ +':'▼ ')+dl.toFixed(2)+'</span>':'')+'</div>'}).join('');
+ var any=FT.some(function(f){var p=PRICES.prev[f];return p!=null&&p!==PRICES.cur[f]});
+ var up=FT.some(function(f){var p=PRICES.prev[f];return p!=null&&PRICES.cur[f]>p});var dn=FT.some(function(f){var p=PRICES.prev[f];return p!=null&&PRICES.cur[f]<p});
+ var al=(un&&any)?'<div class="card pad row" style="border:1px solid var(--accent);gap:10px"><span class="grow"><b>'+(up&&!dn?t('pUp'):dn&&!up?t('pDown'):t('pUp')+' / '+t('pDown'))+'</b><div class="small muted">'+t('sinceD',{d:fdate(PRICES.prev.d)})+'</div></span><button class="btn ghost sm" data-a="pseen">'+t('dismiss')+'</button></div>':'';
+ return al+'<div class="section-h"><h2>'+t('priceTitle')+'</h2><button class="icon-btn" data-a="prefresh" aria-label="'+t('refresh')+'" style="'+(PL.busy?'opacity:.5':'')+'">↻</button></div><div class="stats" style="grid-template-columns:repeat(3,1fr)">'+rows+'</div><div class="small '+(stale()?'':'muted')+'" style="'+(stale()?'color:var(--warn)':'')+'">'+t('asof',{d:fdate(PRICES.asof)})+' · <a href="'+PRICES.src+'" target="_blank" rel="noopener" style="color:inherit">'+t('source')+'</a>'+(stale()?'<br>'+t('stale'):'')+'</div>'}
+function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function monthHtml(es){var now=new Date(),dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),dd=now.getDate(),cm=ym(now);
+ var cur=es.filter(function(e){return e.date.slice(0,7)===cm}),sp=sum(cur),est=cur.length?sp/dd*dim:null;
+ var tot=0;for(var i=1;i<=3;i++){var k=ym(new Date(now.getFullYear(),now.getMonth()-i,1));tot+=sum(es.filter(function(e){return e.date.slice(0,7)===k}))}
+ var kms=cur.filter(function(e){return e.km}).map(function(e){return e.km}),km=kms.length>1?Math.max.apply(0,kms)-Math.min.apply(0,kms):null;
+ var tile=function(l,v){return '<div class="stat"><span class="small muted">'+l+'</span><b>'+v+'</b></div>'};
+ return '<div class="section-h"><h2>'+t('monthly')+'</h2></div><div class="card pad">'+chart(es)+'</div><div class="stats">'+tile(t('estMonth'),est===null?'—':'≈ '+money(Math.round(est)))+tile(t('soFar'),money(sp))+tile(t('avg3'),tot?money(Math.round(tot/3)):'—')+tile(t('kmMonth'),km===null?'—':num(km)+' km')+'</div>'}
+function niceMax(m){var p=Math.pow(10,Math.floor(Math.log10(m))),n=m/p;return(n<=1?1:n<=2?2:n<=5?5:10)*p}
+function chart(es){var now=new Date(),ms=[],i;for(i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);ms.push({k:ym(d),l:d.toLocaleDateString(LOCALE[S.s.lang],{month:'short'}),f:0,o:0})}
+ es.forEach(function(e){var m=ms.filter(function(x){return x.k===e.date.slice(0,7)})[0];if(m){if(grp(e.cat)==='fuel')m.f+=+e.cost||0;else m.o+=+e.cost||0}});
+ var mx=niceMax(Math.max(1,Math.max.apply(0,ms.map(function(m){return m.f+m.o})))),W=340,H=170,pl=46,pb=22,pt=8,pw=W-pl-6,ph=H-pb-pt,bw=pw/6,s='';
+ [0,.5,1].forEach(function(f){var y=pt+ph-ph*f;s+='<line x1="'+pl+'" x2="'+(W-6)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="'+(pl-6)+'" y="'+(y+3)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+num(mx*f)+'</text>'});
+ ms.forEach(function(m,j){var x=pl+j*bw+bw*.2,w=bw*.6,hf=ph*m.f/mx,ho=ph*m.o/mx,y0=pt+ph;
+  if(m.o)s+='<rect x="'+x+'" y="'+(y0-hf-ho)+'" width="'+w+'" height="'+ho+'" rx="3" fill="var(--warn)"/>';
+  if(m.f)s+='<rect x="'+x+'" y="'+(y0-hf)+'" width="'+w+'" height="'+hf+'" rx="3" fill="var(--accent)"/>';
+  s+='<text x="'+(x+w/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10" fill="var(--muted)">'+esc(m.l)+'</text>'});
+ return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="'+t('monthly')+' ('+S.s.cur+')">'+s+'</svg><div class="small muted" style="display:flex;gap:14px;margin-top:6px"><span><b style="color:var(--accent)">■</b> '+t('fuel')+'</span><span><b style="color:var(--warn)">■</b> '+t('nonFuel')+'</span><span>('+S.s.cur+')</span></div>'}
+function head(title,sub,left){return '<div class="top"><div class="brand">'+(left||'<div class="logo">'+I.home+'</div>')+'<div><h1>'+esc(title)+'</h1>'+(sub?'<div class="small muted">'+esc(sub)+'</div>':'')+'</div></div></div>'}
+function vGarage(){
+ var al=alerts(),h=head('GarageBox',S.v.length+' '+t('vehicles'));
+ if(!S.v.length)return h+priceCard()+'<div class="card empty"><div class="logo" style="width:56px;height:56px">'+I.car+'</div><h2>'+t('noVeh')+'</h2><div class="muted">'+t('noVehSub')+'</div><button class="btn" data-a="newv">'+t('addVehicle')+'</button></div>';
+ var a=priceCard()+'<div class="section-h"><h2>'+t('upcoming')+'</h2></div>'+(al.length?'<div class="card">'+al.slice(0,5).map(function(s){return dlRow(s.d,true)}).join('')+'</div>':'<div class="card pad muted">'+t('allGood')+'</div>');
+ return h+a+'<div class="section-h"><h2>'+t('myGarage')+'</h2></div><div class="list">'+S.v.map(vCard).join('')+'</div><button class="fab" data-a="newv" aria-label="'+t('addVehicle')+'">'+I.plus+'</button>'}
+function vDetail(v){var ds=S.d.filter(function(d){return d.vid===v.id}).sort(function(a,b){return status(a).ds-status(b).ds}),es=S.e.filter(function(e){return e.vid===v.id}).sort(function(a,b){return b.date.localeCompare(a.date)});
+ var f=R.fv==='all'?es:es.filter(function(e){return grp(e.cat)===R.fv});
+ return '<div class="top"><button class="icon-btn" data-a="back" aria-label="'+t('back')+'">'+I.back+'</button><button class="btn ghost sm" data-a="editv" data-id="'+v.id+'">'+t('edit')+'</button></div>'+
+ '<div class="hero"'+cover(v)+'>'+(v.photo?'':'<div class="ph" style="position:absolute;inset:0">'+I[v.type]+'</div>')+'<div class="shade"></div><div class="info"><div class="nm">'+esc(v.name)+'</div><div class="small" style="opacity:.85">'+esc([v.make,v.model,v.year].filter(Boolean).join(' '))+(v.plate?' · '+esc(v.plate):'')+(v.km!=null?(v.make||v.model||v.year||v.plate?' · ':'')+num(v.km)+' km':'')+'</div></div></div>'+
+ statsHtml(es)+monthHtml(es)+
+ '<div class="section-h"><h2>'+t('deadlines')+'</h2><button class="btn ghost sm" data-a="newd" data-v="'+v.id+'">+ '+t('addDeadline')+'</button></div><div class="card">'+(ds.length?ds.map(function(d){return dlRow(d)}).join(''):'<div class="pad muted">'+t('noDeadlines')+'</div>')+'</div>'+
+ '<div class="section-h"><h2>'+t('history')+'</h2><button class="btn ghost sm" data-a="newe" data-v="'+v.id+'">+ '+t('addEntry')+'</button></div>'+fseg()+'<div class="card">'+(f.length?f.map(function(e){return enRow(e)}).join(''):'<div class="pad muted">'+t('noEntries')+'</div>')+'</div>'}
+function fseg(){return '<div class="seg">'+[['all','all'],['maint','svc'],['fuel','fuel'],['exp','exp']].map(function(p){return '<button data-a="fv" data-id="'+p[0]+'" class="'+(R.fv===p[0]?'on':'')+'">'+(p[0]==='maint'?t('maintCost'):p[0]==='exp'?t('log'):t(p[1]))+'</button>'}).join('')+'</div>'}
+function vDeadlines(){var ds=S.d.slice().sort(function(a,b){return status(a).ds-status(b).ds});
+ return head(t('deadlines'))+(ds.length?'<div class="card">'+ds.map(function(d){return dlRow(d,true)}).join('')+'</div>':'<div class="card pad muted">'+t('noDeadlines')+'</div>')+(S.v.length?'<button class="fab" data-a="newd" aria-label="'+t('addDeadline')+'">'+I.plus+'</button>':'')}
+function vLog(){var es=S.e.slice().sort(function(a,b){return b.date.localeCompare(a.date)});var f=R.fv==='all'?es:es.filter(function(e){return grp(e.cat)===R.fv});
+ return head(t('log'))+statsHtml(es)+monthHtml(es)+fseg()+(f.length?'<div class="card">'+f.map(function(e){return enRow(e,true)}).join('')+'</div>':'<div class="card pad muted">'+t('noEntries')+'</div>')+(S.v.length?'<button class="fab" data-a="newe" aria-label="'+t('addEntry')+'">'+I.plus+'</button>':'')}
+function vSettings(){var s=S.s,np=('Notification' in window)?Notification.permission:'na';
+ var opt=function(a,cur){return a.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===cur?' selected':'')+'>'+x[1]+'</option>'}).join('')};
+ return head(t('settings'))+'<div class="card pad list">'+
+ '<div class="field"><label for="s-lang">'+t('lang')+'</label><select id="s-lang" data-set="lang">'+opt([['en','English'],['it','Italiano'],['tr','Türkçe'],['fr','Français']],s.lang)+'</select></div>'+
+ '<div class="two"><div class="field"><label for="s-cur">'+t('currency')+'</label><select id="s-cur" data-set="cur">'+opt([['€','€ EUR'],['₺','₺ TRY'],['$','$ USD'],['£','£ GBP']],s.cur)+'</select></div>'+
+ '<div class="field"><label for="s-theme">'+t('theme')+'</label><select id="s-theme" data-set="theme">'+opt([['auto',t('auto')],['dark',t('dark')],['light',t('light')]],s.theme)+'</select></div></div>'+
+ '<div class="field"><label for="s-lead">'+t('reminder')+'</label><select id="s-lead" data-set="lead">'+opt([[7,'7'],[15,'15'],[30,'30'],[45,'45'],[60,'60']],+s.lead)+'</select></div></div>'+
+ (isStandalone()?'':'<div class="card pad list"><h3>'+t('installTitle')+'</h3><div class="small muted">'+(/iphone|ipad|ipod/i.test(navigator.userAgent)?t('installIos'):t('installAndroid'))+'</div>'+(R.dip?'<button class="btn" data-a="install">'+t('installBtn')+'</button>':'')+'</div>')+'<div class="card pad list"><h3>'+t('notif')+'</h3>'+(np==='na'?'<div class="small muted">'+t('notifNo')+'</div>':np==='granted'?'<span class="chip ok">'+t('notifGranted')+'</span><button class="btn ghost" data-a="ntest">'+t('notifTest')+'</button>':'<button class="btn" data-a="non">'+t('notifOn')+'</button><div class="small muted">'+t('notifNo')+'</div>')+'</div>'+
+ '<div class="card pad list"><h3>'+t('backup')+'</h3><div class="small muted">'+t('storedLocal')+'</div><button class="btn ghost" data-a="bcopy">'+t('copy')+'</button><div class="field"><label for="bk">'+t('paste')+'</label><textarea id="bk" class="bk"></textarea></div><button class="btn ghost" data-a="brest">'+t('restore')+'</button><div id="bmsg" class="small muted" aria-live="polite"></div><button class="btn danger" data-a="wipe">'+(R.arm==='wipe'?t('confirm'):t('reset'))+'</button></div>'}
+</script>
+<script>
+function vehOpts(sel){return S.v.map(function(v){return '<option value="'+v.id+'"'+(v.id===sel?' selected':'')+'>'+esc(v.name)+'</option>'}).join('')}
+function fld(id,label,inner){return '<div class="field"><label for="'+id+'">'+label+'</label>'+inner+'</div>'}
+function inp(id,type,val,extra){return '<input id="'+id+'" type="'+type+'" value="'+esc(val==null?'':val)+'" '+(extra||'')+'>'}
+function sheetHtml(){var q=R.sheet;if(!q)return '';var h='';
+ if(q.k==='veh'){var v=q.id?veh(q.id):{type:'car'};R.photo=R.photo===undefined?v.photo||'':R.photo;R.vtype=v.type;
+  h='<h2>'+(q.id?t('edit'):t('addVehicle'))+'</h2><div class="seg" id="f-type"><button type="button" data-a="vtype" data-id="car" class="'+(v.type==='car'?'on':'')+'">'+t('car')+'</button><button type="button" data-a="vtype" data-id="moto" class="'+(v.type==='moto'?'on':'')+'">'+t('moto')+'</button></div>'+
+  fld('f-name',t('name'),inp('f-name','text',v.name,'maxlength="40" placeholder="Alfa Giulia"'))+'<div class="two">'+fld('f-make',t('make'),inp('f-make','text',v.make,'maxlength="30"'))+fld('f-model',t('model'),inp('f-model','text',v.model,'maxlength="30"'))+'</div><div class="two">'+fld('f-year',t('year'),inp('f-year','number',v.year,'inputmode="numeric"'))+fld('f-plate',t('plate'),inp('f-plate','text',v.plate,'maxlength="14"'))+'</div>'+fld('f-km',t('km'),inp('f-km','number',v.km,'inputmode="numeric" min="0"'))+fld('f-fuelv',t('fuelType'),'<select id="f-fuelv">'+FT.map(function(x){return '<option value="'+x+'"'+(x===(v.fuel||'benzin')?' selected':'')+'>'+t(x)+'</option>'}).join('')+'</select>')+
+  '<div class="field"><label for="f-photo">'+t('cover')+'</label><div class="cover-prev" id="f-prev"'+(R.photo?' style="background-image:url('+R.photo+')"':'')+'>'+(R.photo?'':I.img)+'</div><input id="f-photo" type="file" accept="image/*"></div>'+
+  '<div class="acts"><button class="btn ghost" data-a="close">'+t('cancel')+'</button><button class="btn" data-a="savev" data-id="'+(q.id||'')+'">'+t('save')+'</button></div>'+(q.id?'<button class="btn danger" data-a="delv" data-id="'+q.id+'">'+(R.arm==='v'+q.id?t('confirm'):t('del'))+'</button>':'')}
+ if(q.k==='dl'){var d=q.id?S.d.find(function(x){return x.id===q.id}):{vid:q.vid||R.vid||(S.v[0]&&S.v[0].id),type:'insurance',date:today()};
+  h='<h2>'+(q.id?t('edit'):t('addDeadline'))+'</h2>'+fld('f-veh',t('vehicle'),'<select id="f-veh">'+vehOpts(d.vid)+'</select>')+fld('f-type',t('category'),'<select id="f-type">'+DT.map(function(x){return '<option value="'+x+'"'+(x===d.type?' selected':'')+'>'+t(x)+'</option>'}).join('')+'</select>')+'<div class="two">'+fld('f-date',t('date'),inp('f-date','date',d.date))+fld('f-km',t('dueKm'),inp('f-km','number',d.km,'inputmode="numeric" min="0"'))+'</div>'+fld('f-note',t('note'),inp('f-note','text',d.note,'maxlength="60"'))+
+  '<div class="acts"><button class="btn ghost" data-a="close">'+t('cancel')+'</button><button class="btn" data-a="saved" data-id="'+(q.id||'')+'">'+t('save')+'</button></div>'+(q.id?'<button class="btn danger" data-a="deld" data-id="'+q.id+'">'+(R.arm==='d'+q.id?t('confirm'):t('del'))+'</button>':'')}
+ if(q.k==='en'){var e=q.id?S.e.find(function(x){return x.id===q.id}):{vid:q.vid||R.vid||(S.v[0]&&S.v[0].id),cat:'fuel',date:today()};
+  var og=function(g,lbl){return '<optgroup label="'+lbl+'">'+CAT[g].map(function(x){return '<option value="'+x+'"'+(x===e.cat?' selected':'')+'>'+t(x)+'</option>'}).join('')+'</optgroup>'};
+  h='<h2>'+(q.id?t('edit'):t('addEntry'))+'</h2>'+fld('f-veh',t('vehicle'),'<select id="f-veh">'+vehOpts(e.vid)+'</select>')+fld('f-cat',t('category'),'<select id="f-cat">'+og('fuel',t('fuel'))+og('maint',t('maintCost'))+og('exp',t('log'))+'</select>')+'<div class="two">'+fld('f-date',t('date'),inp('f-date','date',e.date))+fld('f-cost',(e.cat==='fuel'?t('paid'):t('cost'))+' ('+S.s.cur+')',inp('f-cost','number',e.cost,'inputmode="decimal" step="0.01" min="0"'))+'</div>'+
+  '<div id="fuelbox" class="list"'+(e.cat==='fuel'?'':' hidden')+'><div class="two">'+fld('f-fuel',t('fuelType'),'<select id="f-fuel">'+FT.map(function(x){return '<option value="'+x+'"'+(x===(e.fuel||(veh(e.vid)||{}).fuel||'benzin')?' selected':'')+'>'+t(x)+'</option>'}).join('')+'</select>')+fld('f-ppl',t('ppl')+' ('+S.s.cur+')',inp('f-ppl','number',e.ppl||(q.id?'':(lastPpl(e.vid,e.fuel||(veh(e.vid)||{}).fuel)||ref(e.fuel||(veh(e.vid)||{}).fuel||'benzin'))),'inputmode="decimal" step="0.01" min="0"'))+'</div><div class="two">'+fld('f-lit',t('liters'),inp('f-lit','number',e.liters,'inputmode="decimal" step="0.01" min="0"'))+fld('f-km',t('km'),inp('f-km','number',e.km,'inputmode="numeric" min="0"'))+'</div><div class="small muted">'+t('autoL')+'</div></div>'+
+  '<div id="kmbox"'+(e.cat==='fuel'?' hidden':'')+'>'+fld('f-km2',t('km'),inp('f-km2','number',e.km,'inputmode="numeric" min="0"'))+'</div>'+
+  fld('f-note',t('note'),inp('f-note','text',e.note,'maxlength="60"'))+
+  '<div class="acts"><button class="btn ghost" data-a="close">'+t('cancel')+'</button><button class="btn" data-a="savee" data-id="'+(q.id||'')+'">'+t('save')+'</button></div>'+(q.id?'<button class="btn danger" data-a="dele" data-id="'+q.id+'">'+(R.arm==='e'+q.id?t('confirm'):t('del'))+'</button>':'')}
+ return '<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">'+h+'</div></div>'}
+function render(){document.documentElement.lang=S.s.lang;var th=S.s.theme;if(th==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',th);
+ var v=R.vid&&veh(R.vid),b=v?vDetail(v):R.tab==='garage'?vGarage():R.tab==='deadlines'?vDeadlines():R.tab==='log'?vLog():vSettings();
+ var tb=[['garage','home'],['deadlines','cal'],['log','wal'],['settings','set']].map(function(x){return '<button data-a="tab" data-id="'+x[0]+'" class="'+(!v&&R.tab===x[0]||v&&x[0]==='garage'?'on':'')+'">'+I[x[1]]+t(x[0])+'</button>'}).join('');
+ $('app').innerHTML='<div class="wrap">'+b+'</div><div class="tabs"><nav>'+tb+'</nav></div>'+sheetHtml();
+ if(R.sheet&&R.sheet.k==='veh')$('f-photo').addEventListener('change',onPhoto)}
+function onPhoto(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var m=900,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);R.photo=c.toDataURL('image/jpeg',.75);var p=$('f-prev');p.style.backgroundImage='url('+R.photo+')';p.innerHTML=''};im.src=r.result};r.readAsDataURL(f)}
+function val(i){var x=$(i);return x?x.value.trim():''}
+function nv(i){var x=val(i);return x===''?null:+x}
+function arm(k,fn){if(R.arm===k){R.arm=null;fn()}else{R.arm=k;render()}}
+function notify(msg){try{if('Notification' in window&&Notification.permission==='granted'){new Notification('GarageBox',{body:msg});return true}}catch(e){}return false}
+function priceNotify(){if(S.s.seenP===undefined||S.s.seenP===sig())return;var u=FT.filter(function(f){var p=PRICES.prev[f];return p!=null&&p!==PRICES.cur[f]}).map(function(f){var d=PRICES.cur[f]-PRICES.prev[f];return t(f)+' '+(d>0?'+':'')+d.toFixed(2)});if(u.length&&notify(t('priceTitle')+': '+u.join(', '))){S.s.seenP=sig();save()}}
+function checkNotify(){priceNotify();var a=alerts();if(a.length&&S.s.lastN!==today()){var v=veh(a[0].d.vid);if(notify(t(a[0].d.type)+(v?' · '+v.name:'')+' — '+(a[0].txt||t('overdue'))+(a.length>1?' (+'+(a.length-1)+')':''))){S.s.lastN=today();save()}}}
+document.addEventListener('click',function(ev){var el=ev.target.closest('[data-a]');if(!el)return;var a=el.dataset.a,id=el.dataset.id;
+ if(a==='scrim'){if(ev.target!==el)return;R.sheet=null;R.photo=undefined;return render()}
+ if(a==='tab'){R.tab=id;R.vid=null;R.fv='all';R.arm=null;window.scrollTo(0,0);return render()}
+ if(a==='open'){R.vid=id;R.fv='all';window.scrollTo(0,0);return render()}
+ if(a==='back'){R.vid=null;return render()}
+ if(a==='fv'){R.fv=id;return render()}
+ if(a==='close'){R.sheet=null;R.photo=undefined;R.arm=null;return render()}
+ if(a==='newv'){R.photo=undefined;R.sheet={k:'veh'};return render()}
+ if(a==='editv'){R.photo=undefined;R.sheet={k:'veh',id:id};return render()}
+ if(a==='vtype'){R.vtype=id;[].forEach.call(document.querySelectorAll('#f-type button'),function(b){b.classList.toggle('on',b.dataset.id===id)});return}
+ if(a==='newd'){if(!S.v.length){R.tab='garage';R.sheet={k:'veh'};return render()}R.sheet={k:'dl',vid:el.dataset.v};return render()}
+ if(a==='dl'){R.sheet={k:'dl',id:id};return render()}
+ if(a==='newe'){if(!S.v.length){R.tab='garage';R.sheet={k:'veh'};return render()}R.sheet={k:'en',vid:el.dataset.v};return render()}
+ if(a==='en'){R.sheet={k:'en',id:id};return render()}
+ if(a==='savev'){var n=val('f-name');if(!n){$('f-name').focus();return}var o=id?veh(id):{id:uid()};
+  Object.assign(o,{type:R.vtype||'car',name:n,make:val('f-make'),model:val('f-model'),year:nv('f-year'),plate:val('f-plate').toUpperCase(),km:nv('f-km'),fuel:val('f-fuelv')||'benzin',photo:R.photo||''});if(!id)S.v.push(o);save();R.sheet=null;R.photo=undefined;return render()}
+ if(a==='delv')return arm('v'+id,function(){S.v=S.v.filter(function(v){return v.id!==id});S.d=S.d.filter(function(d){return d.vid!==id});S.e=S.e.filter(function(e){return e.vid!==id});R.sheet=null;R.vid=null;save();render()});
+ if(a==='saved'){var o2=id?S.d.find(function(x){return x.id===id}):{id:uid()};var dt=val('f-date'),kk=nv('f-km');if(!dt&&kk===null){$('f-date').focus();return}
+  Object.assign(o2,{vid:val('f-veh'),type:val('f-type'),date:dt,km:kk,note:val('f-note')});if(!id)S.d.push(o2);save();R.sheet=null;return render()}
+ if(a==='deld')return arm('d'+id,function(){S.d=S.d.filter(function(d){return d.id!==id});R.sheet=null;save();render()});
+ if(a==='savee'){var o3=id?S.e.find(function(x){return x.id===id}):{id:uid()};var vv=veh(val('f-veh')),isF=val('f-cat')==='fuel',km=isF?nv('f-km'):nv('f-km2');
+  Object.assign(o3,{vid:val('f-veh'),cat:val('f-cat'),date:val('f-date')||today(),cost:nv('f-cost')||0,km:km,liters:isF?nv('f-lit'):null,fuel:isF?val('f-fuel'):null,ppl:isF?nv('f-ppl'):null,note:val('f-note')});if(!id)S.e.push(o3);if(vv&&km!==null&&(vv.km==null||km>vv.km))vv.km=km;save();R.sheet=null;return render()}
+ if(a==='dele')return arm('e'+id,function(){S.e=S.e.filter(function(e){return e.id!==id});R.sheet=null;save();render()});
+ if(a==='pseen'){S.s.seenP=sig();save();return render()}
+ if(a==='prefresh'){var pp=loadPrices(true);if(pp)pp.then(checkNotify);return}
+ if(a==='install'){if(R.dip){R.dip.prompt();R.dip=null;render()}return}
+ if(a==='non'){try{Notification.requestPermission().then(function(){render();checkNotify()},function(){render()})}catch(e){render()}return}
+ if(a==='ntest'){notify(t('upcoming'));return}
+ if(a==='bcopy'){var js=JSON.stringify(S),m=$('bmsg');var ok=function(){m.textContent=t('copied')};try{navigator.clipboard.writeText(js).then(ok,function(){var x=$('bk');x.value=js;x.select()})}catch(e){var x=$('bk');x.value=js;x.select()}return}
+ if(a==='brest'){try{var o4=JSON.parse($('bk').value);if(!Array.isArray(o4.v)||!Array.isArray(o4.d)||!Array.isArray(o4.e))throw 0;S=o4;S.s=Object.assign({lang:'it',cur:'₺',lead:30,theme:'auto',lastN:''},o4.s||{});save();R.tab='garage';render()}catch(e){$('bmsg').textContent=t('bad')}return}
+ if(a==='wipe')return arm('wipe',function(){S={v:[],d:[],e:[],s:S.s};save();R.tab='garage';render()})});
+function calc(src){var c=nv('f-cost'),p=nv('f-ppl'),l=nv('f-lit');
+ if(src==='lit'){if(c&&l)$('f-ppl').value=(c/l).toFixed(2)}else if(c&&p)$('f-lit').value=(c/p).toFixed(2)}
+document.addEventListener('input',function(ev){var i=ev.target.id;if(i==='f-cost'||i==='f-ppl')calc('cp');else if(i==='f-lit')calc('lit')});
+document.addEventListener('change',function(ev){var i=ev.target.id;
+ if(i==='f-cat'){var f=ev.target.value==='fuel';$('fuelbox').hidden=!f;$('kmbox').hidden=f;var km=f?$('f-km2').value:$('f-km').value;(f?$('f-km'):$('f-km2')).value=km;return}
+ if(i==='f-fuel'){var v=veh(val('f-veh'));$('f-ppl').value=(lastPpl(v&&v.id,ev.target.value)||ref(ev.target.value));calc('cp');return}
+ if(i==='f-veh'&&$('f-fuel')){var v2=veh(ev.target.value);if(v2&&v2.fuel){$('f-fuel').value=v2.fuel;$('f-ppl').value=(lastPpl(v2.id,v2.fuel)||ref(v2.fuel));calc('cp')}return}
+var k=ev.target.dataset&&ev.target.dataset.set;if(!k)return;S.s[k]=k==='lead'?+ev.target.value:ev.target.value;save();render()});
+document.documentElement.lang=S.s.lang;
+if(S.s.pc&&S.s.pc.asof>=PRICES.asof)applyPrices(S.s.pc);
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();R.dip=e;if(!R.sheet&&R.tab==='settings'&&!R.vid)render()});
+render();checkNotify();
+(function(){var p=loadPrices();if(p)p.then(checkNotify)})();
+document.addEventListener('visibilitychange',function(){if(!document.hidden){var p=loadPrices();if(p)p.then(checkNotify)}});
+try{if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}
+</script>
+</body></html>

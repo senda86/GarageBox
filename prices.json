@@ -1,15 +1,15 @@
 {
  "city": "Istanbul",
- "asof": "2026-11-23",
+ "asof": "2026-11-24",
  "cur": {
-  "benzin": 68.16,
-  "motorin": 88.65,
+  "benzin": 68.28,
+  "motorin": 88.81,
   "lpg": null
  },
  "prev": {
-  "d": "2026-11-21",
-  "benzin": null,
-  "motorin": null,
+  "d": "2026-11-23",
+  "benzin": 68.16,
+  "motorin": 88.65,
   "lpg": null
  },
  "src": "https://www.opet.com.tr/akaryakit-fiyatlari"
